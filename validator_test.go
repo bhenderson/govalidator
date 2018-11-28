@@ -2279,6 +2279,10 @@ type FieldsRequiredByDefaultButExemptOrOptionalStruct struct {
 	Email string `valid:"optional,email"`
 }
 
+type FieldsRequiredByDefaultEmbedded struct {
+	FieldRequiredByDefault `valid:"required"`
+}
+
 type MessageWithSeveralFieldsStruct struct {
 	Title string `valid:"length(1|10)"`
 	Body  string `valid:"length(1|10)"`
@@ -2378,6 +2382,27 @@ func TestFieldsRequiredByDefaultButExemptOrOptionalStruct(t *testing.T) {
 		{FieldsRequiredByDefaultButExemptOrOptionalStruct{Email: ""}, true},
 		{FieldsRequiredByDefaultButExemptOrOptionalStruct{Email: "test@example.com"}, true},
 		{FieldsRequiredByDefaultButExemptOrOptionalStruct{Email: "test@example"}, false},
+	}
+	SetFieldsRequiredByDefault(true)
+	for _, test := range tests {
+		actual, err := ValidateStruct(test.param)
+		if actual != test.expected {
+			t.Errorf("Expected ValidateStruct(%q) to be %v, got %v", test.param, test.expected, actual)
+			if err != nil {
+				t.Errorf("Got Error on ValidateStruct(%q): %s", test.param, err)
+			}
+		}
+	}
+	SetFieldsRequiredByDefault(false)
+}
+
+func TestFieldsRequiredByDefaultEmbedded(t *testing.T) {
+	var tests = []struct {
+		param    FieldsRequiredByDefaultEmbedded
+		expected bool
+	}{
+		{FieldsRequiredByDefaultEmbedded{}, false},
+		{FieldsRequiredByDefaultEmbedded{FieldRequiredByDefault{Email: "test@example.com"}}, true},
 	}
 	SetFieldsRequiredByDefault(true)
 	for _, test := range tests {

@@ -998,7 +998,7 @@ func typeCheck(v reflect.Value, t reflect.StructField, o reflect.Value, options 
 	// Check if the field should be ignored
 	switch tag {
 	case "":
-		if v.Kind() != reflect.Slice && v.Kind() != reflect.Map {
+		if v.Kind() != reflect.Slice && v.Kind() != reflect.Map && !t.Anonymous {
 			if !fieldsRequiredByDefault {
 				return true, nil
 			}
